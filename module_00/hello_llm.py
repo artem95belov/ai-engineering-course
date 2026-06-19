@@ -44,7 +44,7 @@ def call_openrouter(question: str) -> dict:
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY не найден в .env")
 
-    model = os.getenv("OPENROUTER_DEFAULT_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
+    model = os.getenv("OPENROUTER_DEFAULT_MODEL", "openrouter/auto")
 
     client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
 
@@ -93,7 +93,7 @@ def main():
 
     try:
         openrouter_result = call_openrouter(question)
-        model_name = os.getenv("OPENROUTER_DEFAULT_MODEL", "nvidia/nemotron-3-ultra-550b-a55b:free")
+        model_name = os.getenv("OPENROUTER_DEFAULT_MODEL", "openrouter/auto")
         print_result(f"OpenRouter: {model_name}", openrouter_result)
     except Exception as e:
         print(f"OpenRouter ошибка: {e}\n")
