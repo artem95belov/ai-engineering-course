@@ -100,8 +100,8 @@ def call_openrouter(question: str) -> dict:
     if not api_key:
         raise ValueError("OPENROUTER_API_KEY не найден в .env")
 
-    client = OpenAI(api_key=api_key, base_url="https://openrouter.ai/api/v1")
-    model = os.getenv("OPENROUTER_DEFAULT_MODEL", "openrouter/auto")
+    client = OpenAI(api_key=api_key, base_url="https://huggingface.co")
+    model = os.getenv("OPENROUTER_DEFAULT_MODEL", "Qwen/Qwen2.5-7B-Instruct")
 
     response = client.chat.completions.create(
         model=model,
@@ -140,10 +140,14 @@ def ask_llm(question: str) -> tuple:
     """
     start = time.time()
 
-    # --- заменить этот блок на try/except (см. пункты 1-3 выше) ---
-    result = call_gigachat(question)
-    provider = "GigaChat"
-    # --- конец блока ---
+    try:
+        result = call_gigachat(question)
+        provider = "GigaChat"
+    except Exception as e:
+        print(f"[!] GigaChat недоступен: {e}")
+        print("    Переключаюсь на резервный провайдер OpenRouter...")
+        result = call_openrouter(question)
+        provider = "OpenRouter"
 
     latency = time.time() - start
     return result, provider, latency
