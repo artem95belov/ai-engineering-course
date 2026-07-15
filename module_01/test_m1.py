@@ -13,7 +13,7 @@ import llm_client
 
 
 def fake_answer(text: str) -> dict:
-    """Ответ-заглушка в том же формате, что возвращают call_gigachat/call_openrouter."""
+    """Ответ-заглушка в том же формате, что возвращают call_gigachat/call_huggingface."""
     return {
         "answer": text,
         "prompt_tokens": 10,
@@ -27,10 +27,10 @@ def test_primary_used_when_gigachat_ok(monkeypatch):
     """Если GigaChat работает — отвечает именно он, резерв не трогаем."""
     monkeypatch.setattr(llm_client, "call_gigachat", lambda q: fake_answer("основной ответ"))
 
-    def openrouter_must_not_be_called(question):
-        raise AssertionError("OpenRouter не должен вызываться, пока GigaChat работает")
+    def hf_must_not_be_called(question):
+        raise AssertionError("HuggingFace не должен вызываться, пока GigaChat работает")
 
-    monkeypatch.setattr(llm_client, "call_openrouter", openrouter_must_not_be_called)
+    monkeypatch.setattr(llm_client, "call_huggingface", hf_must_not_be_called)
 
     result, provider, latency = llm_client.ask_llm("любой вопрос")
 
@@ -39,18 +39,18 @@ def test_primary_used_when_gigachat_ok(monkeypatch):
     assert isinstance(latency, float)
 
 
-def test_fallback_switches_to_openrouter(monkeypatch):
-    """Если GigaChat упал — ответ должен прийти от OpenRouter, а не исключение."""
+def test_fallback_switches_to_huggingface(monkeypatch):
+    """Если GigaChat упал — ответ должен прийти от HuggingFace, а не исключение."""
 
     def broken_gigachat(question):
         raise RuntimeError("503 Service Unavailable (тест)")
 
     monkeypatch.setattr(llm_client, "call_gigachat", broken_gigachat)
-    monkeypatch.setattr(llm_client, "call_openrouter", lambda q: fake_answer("резервный ответ"))
+    monkeypatch.setattr(llm_client, "call_huggingface", lambda q: fake_answer("резервный ответ"))
 
     result, provider, latency = llm_client.ask_llm("любой вопрос")
 
-    assert provider == "OpenRouter"
+    assert provider == "HuggingFace"
     assert result["answer"] == "резервный ответ"
     assert isinstance(latency, float)
 
@@ -62,9 +62,9 @@ def test_invalid_key_triggers_fallback(monkeypatch):
         raise ValueError("401 Unauthorized: неверный GIGACHAT_CREDENTIALS")
 
     monkeypatch.setattr(llm_client, "call_gigachat", unauthorized)
-    monkeypatch.setattr(llm_client, "call_openrouter", lambda q: fake_answer("резервный ответ"))
+    monkeypatch.setattr(llm_client, "call_huggingface", lambda q: fake_answer("резервный ответ"))
 
     result, provider, _ = llm_client.ask_llm("любой вопрос")
 
-    assert provider == "OpenRouter"
+    assert provider == "HuggingFace"
     assert result["total_tokens"] == 30

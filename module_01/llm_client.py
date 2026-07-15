@@ -3,7 +3,7 @@
 
 Что делает этот файл:
   call_gigachat(...)   спрашивает GigaChat  — основной провайдер
-  call_openrouter(...) спрашивает OpenRouter — резервный провайдер
+  call_huggingface(...) спрашивает HuggingFace — резервный провайдер
   ask_llm(...)         решает, кого спросить, и меряет время ответа
 
 Задание 3: меняешь только блок "НАСТРОЙКИ СТУДЕНТА" (TODO 1-4) и смотришь,
@@ -41,7 +41,7 @@ MY_QUESTION = "Перечисли 3 причины остановки конве
 #   0.0 = строго и предсказуемо (один и тот же ответ на один и тот же вопрос)
 #   1.0 = разнообразно и "творчески" (ответы будут отличаться)
 # В Задании 3 ты запустишь файл дважды с 0.0 и дважды с 1.0 и сравнишь.
-TEMPERATURE = 0.0
+TEMPERATURE = 0.7
 
 # TODO 3: max_tokens — потолок длины ответа.
 #   Если ответ обрывается на полуслове, в выводе будет finish_reason = length.
@@ -52,7 +52,7 @@ MAX_TOKENS = 500
 #   Попробуй минимум два варианта, например:
 #     "Ты - строгий технический специалист, отвечаешь кратко и по делу."
 #     "Ты - терпеливый наставник, объясняешь как новичку, с примерами."
-SYSTEM_PROMPT = "Ты - терпеливый наставник, объясняешь как новичку, с примерами."
+SYSTEM_PROMPT = "Ты - помощник инженера промышленного предприятия."
 
 
 # ====================================================================
@@ -94,14 +94,14 @@ def call_gigachat(question: str) -> dict:
     }
 
 
-def call_openrouter(question: str) -> dict:
-    """Спрашивает OpenRouter — резервный провайдер. Тот же формат ответа."""
-    api_key = os.getenv("OPENROUTER_API_KEY")
+def call_huggingface(question: str) -> dict:
+    """Спрашивает HuggingFace — резервный провайдер. Тот же формат ответа."""
+    api_key = os.getenv("HF_API_KEY")
     if not api_key:
-        raise ValueError("OPENROUTER_API_KEY не найден в .env")
+        raise ValueError("HF_API_KEY не найден в .env")
 
-    client = OpenAI(api_key=api_key, base_url="https://huggingface.co")
-    model = os.getenv("OPENROUTER_DEFAULT_MODEL", "Qwen/Qwen2.5-7B-Instruct")
+    client = OpenAI(api_key=api_key, base_url="https://router.huggingface.co/v1")
+    model = os.getenv("HF_MODEL", "meta-llama/Llama-3.3-70B-Instruct")
 
     response = client.chat.completions.create(
         model=model,
@@ -114,7 +114,7 @@ def call_openrouter(question: str) -> dict:
     )
 
     usage = response.usage
-    token_tracker.record("OpenRouter", usage.prompt_tokens, usage.completion_tokens)
+    token_tracker.record("HuggingFace", usage.prompt_tokens, usage.completion_tokens)
 
     return {
         "answer": response.choices[0].message.content,
@@ -130,12 +130,12 @@ def ask_llm(question: str) -> tuple:
 
     TODO 5 (Задание 4): сейчас резерва нет — если GigaChat недоступен,
     скрипт просто падает. Твоя задача — сделать так, чтобы при ЛЮБОЙ ошибке
-    GigaChat вопрос уходил в OpenRouter, а пользователь всё равно получал ответ.
+    GigaChat вопрос уходил в HuggingFace, а пользователь всё равно получал ответ.
 
     Что нужно сделать:
       1. Оберни вызов call_gigachat в try / except Exception as e.
       2. В блоке except: напечатай предупреждение с текстом ошибки,
-         вызови call_openrouter(question) и поставь provider = "OpenRouter".
+         вызови call_huggingface(question) и поставь provider = "HuggingFace".
       3. Строку с latency и return не трогай — она уже написана.
     """
     start = time.time()
@@ -145,9 +145,10 @@ def ask_llm(question: str) -> tuple:
         provider = "GigaChat"
     except Exception as e:
         print(f"[!] GigaChat недоступен: {e}")
-        print("    Переключаюсь на резервный провайдер OpenRouter...")
-        result = call_openrouter(question)
-        provider = "OpenRouter"
+        print("    Переключаюсь на резервный провайдер HuggingFace...")
+        result = call_huggingface(question)
+        provider = "HuggingFace"
+
 
     latency = time.time() - start
     return result, provider, latency
