@@ -2,5 +2,5 @@
 .venv/
 __pycache__/
 *.pyc
-chroma_data/
-chroma_rag_db/
+qdrant_db/
+qdrant_chunks/

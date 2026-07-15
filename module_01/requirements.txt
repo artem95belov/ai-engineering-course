@@ -1,0 +1,4 @@
+python-dotenv==1.0.1
+gigachat==0.1.38
+openai==1.35.0
+pytest==8.2.2
