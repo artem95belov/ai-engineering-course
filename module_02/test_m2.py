@@ -71,9 +71,30 @@ def test_missing_equipment_is_none_not_invented():
     assert ticket.equipment_id is None
 
 
-def test_bad_equipment_format_goes_to_review():
-    """«КМ 101» без дефиса — не идентификатор. TODO 2."""
+def test_registry_contains_known_equipment():
+    """Реестр оборудования загружен, каноничные записи на месте."""
+    assert "КМ-101" in so.REGISTRY_LOOKUP.values()
+    assert "ЭЛОУ-АВТ-6" in so.REGISTRY_LOOKUP.values()
+
+
+def test_messy_spelling_normalized_to_registry_id():
+    """«КМ 101» из заявки должен стать каноничным «КМ-101» из реестра. TODO 2.
+
+    Люди пишут идентификаторы как попало — мелкие огрехи написания мы прощаем
+    и приводим к записи из реестра, а не отправляем заявку человеку.
+    """
     ticket = so.parse_ticket(raw(**{**VALID, "equipment_id": "КМ 101"}))
+    assert ticket is not None
+    assert ticket.equipment_id == "КМ-101"
+
+
+def test_unknown_equipment_goes_to_review():
+    """«ЗЗ-999» выглядит правдоподобно, но в реестре его НЕТ. TODO 2.
+
+    Красиво написанную галлюцинацию модели регэксп бы пропустил —
+    реестр не пропустит. Заявка уходит на ручную проверку.
+    """
+    ticket = so.parse_ticket(raw(**{**VALID, "equipment_id": "ЗЗ-999"}))
     assert ticket is None
 
 
