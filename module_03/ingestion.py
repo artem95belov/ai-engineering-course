@@ -133,6 +133,7 @@ def check_questions(client, model) -> tuple:
     print("=" * 88)
 
     hit, total = 0, 0
+    width = max(len(q["question"]) for q in QUESTIONS)
     for q in QUESTIONS:
         found = client.query_points(
             collection_name=COLLECTION,
@@ -147,10 +148,10 @@ def check_questions(client, model) -> tuple:
             ok = any(d in q["expected"] for d in top_docs)
             hit += ok
             mark = "OK" if ok else " X"
-            print(f"  {mark}  {q['question'][:52]:<52} score={best:.3f}")
+            print(f"  {mark}  {q['question']:<{width}} score={best:.3f}")
             print(f"      нашли: {', '.join(top_docs)}   ждали: {', '.join(q['expected'])}")
         else:
-            print(f"  ??  {q['question'][:52]:<52} score={best:.3f}  <- вопроса нет в базе")
+            print(f"  ??  {q['question']:<{width}} score={best:.3f}  <- вопроса нет в базе")
             print(f"      нашли: {', '.join(top_docs)}   (ответа быть НЕ должно)")
 
     print(f"\n  Попаданий по вопросам из базы: {hit}/{total}")

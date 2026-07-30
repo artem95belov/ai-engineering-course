@@ -4,7 +4,7 @@
 Основной режим — Qdrant в Docker: полноценный сервер с веб-интерфейсом,
 в котором видно коллекции, точки и метаданные (так это выглядит в проде).
 
-    docker run -d --name qdrant -p 6333:6333 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+    docker run -d --name qdrant -p 6333:6333 -v qdrant_storage:/qdrant/storage qdrant/qdrant:v1.18.3
     Веб-интерфейс: http://localhost:6333/dashboard
 
 Резервный режим — embedded: если Docker поставить не удалось, Qdrant умеет
@@ -28,7 +28,7 @@ Qdrant не отвечает на {QDRANT_URL}.
 
 Запусти его в Docker (один раз, дальше он останется в фоне):
 
-    docker run -d --name qdrant -p 6333:6333 -v qdrant_storage:/qdrant/storage qdrant/qdrant
+    docker run -d --name qdrant -p 6333:6333 -v qdrant_storage:/qdrant/storage qdrant/qdrant:v1.18.3
 
 Если контейнер уже создавался, но остановлен:
 

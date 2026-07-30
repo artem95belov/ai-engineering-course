@@ -3,7 +3,7 @@
 # Остановить:    docker compose down   (данные останутся в volume qdrant_storage)
 services:
   qdrant:
-    image: qdrant/qdrant
+    image: qdrant/qdrant:v1.18.3
     container_name: qdrant
     ports:
       - "6333:6333"
