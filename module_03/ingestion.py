@@ -49,8 +49,8 @@ QUESTIONS = json.loads(
 #   (400, 0)   — без нахлёста, куски рвут предложения
 #   (400, 100) — с нахлёстом
 #   (1000, 200) — крупные куски
-CHUNK_SIZE = 400
-OVERLAP = 100
+CHUNK_SIZE = 600
+OVERLAP = 150
 
 
 # ====================================================================
@@ -85,7 +85,23 @@ def chunk_text(text: str, size: int, overlap: int) -> list:
       - последний кусок может быть коротким — это нормально, его тоже возвращаем.
       - пустые куски (одни пробелы) возвращать не нужно.
     """
-    return [text]
+    if overlap >= size:
+        raise ValueError(
+            f"overlap ({overlap}) должен быть меньше size ({size}): "
+            f"иначе шаг окна нулевой и нарезка зациклится"
+        )
+
+    chunks = []
+    step = size - overlap
+    start = 0
+
+    while start < len(text):
+        piece = text[start:start + size]
+        if piece.strip():
+            chunks.append(piece)
+        start += step
+
+    return chunks
 
 
 # ====================================================================
