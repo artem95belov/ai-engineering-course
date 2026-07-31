@@ -89,7 +89,7 @@ FETCH_LOG = SOURCES_DIR / "fetch_log.json"
 # на источник.
 # --------------------------------------------------------------------
 SOURCES = [
-    {   # ОБРАЗЕЦ — эта запись уже заполнена, менять её не нужно
+    {
         "url": ("http://mos.gosnadzor.ru/about/documents/"
                 "Приказ РТН № 461 от 26.11.2020.pdf"),
         "file": "ext_fnp461.pdf",
@@ -99,28 +99,30 @@ SOURCES = [
                  "(приказ Ростехнадзора № 461)",
         "date": "2020-11-26",
     },
-    {   # ГОСТ 32601-2022, насосы центробежные — заполни по образцу
-        "url": "",
-        "file": "",
-        "doc_id": "",
-        "type": "",
-        "title": "",
+    {
+        "url": "https://files.stroyinf.ru/Data/784/78426.pdf",
+        "file": "ext_gost32601.pdf",
+        "doc_id": "EXT-GOST-32601",
+        "type": "нормативный документ",
+        "title": "ГОСТ 32601-2022: Насосы центробежные для нефтяной, "
+                 "нефтехимической и газовой промышленности",
+        "date": "2022",
+    },
+    {
+        "url": "https://gostbank.metaltorg.ru/data/norms_/jr/12.pdf",
+        "file": "ext_reglament_truboprovody.pdf",
+        "doc_id": "EXT-REGL-TRUB",
+        "type": "нормативный документ",
+        "title": "Регламент технического обслуживания и ремонта "
+                 "технологических трубопроводов",
         "date": "",
     },
-    {   # Регламент ТО и ремонта технологических трубопроводов
-        "url": "",
-        "file": "",
-        "doc_id": "",
-        "type": "",
-        "title": "",
-        "date": "",
-    },
-    {   # Регламент технического обслуживания оборудования (PERCo)
-        "url": "",
-        "file": "",
-        "doc_id": "",
-        "type": "",
-        "title": "",
+    {
+        "url": "https://www.perco.ru/download/documentation/rus/Reglament-TO.pdf",
+        "file": "ext_reglament_to.pdf",
+        "doc_id": "EXT-REGL-TO",
+        "type": "нормативный документ",
+        "title": "Регламент технического обслуживания оборудования (PERCo)",
         "date": "",
     },
 ]
@@ -240,7 +242,9 @@ def clean_text(text: str) -> str:
          re.sub(r"\\n{3,}", "\\n\\n", ...) — это сохранит границы абзацев.
       5. Обрезать края всего текста .strip() и вернуть.
     """
-    return text
+    lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.splitlines()]
+    cleaned = "\n".join(lines)
+    return re.sub(r"\n{3,}", "\n\n", cleaned).strip()
 
 
 def extract_pages(pdf_path: Path) -> tuple:
@@ -286,7 +290,7 @@ def has_text_layer(text: str, pages: int) -> bool:
       2. Посчитать, сколько символов приходится на страницу: len(text) / pages.
       3. Вернуть True, если символов на страницу не меньше MIN_CHARS_PER_PAGE.
     """
-    return True
+    return pages > 0 and len(text) / pages >= MIN_CHARS_PER_PAGE
 
 
 # ====================================================================
