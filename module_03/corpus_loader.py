@@ -87,9 +87,10 @@ def load_records() -> list:
     """
     records = []
     for doc in load_documents():
-        for rec in doc["records"]:
+        for i, rec in enumerate(doc["records"]):
             records.append({
                 "doc_id": doc["doc_id"],
+                "record_no": i,
                 "type": doc["type"],
                 "title": doc["title"],
                 "equipment": doc["equipment"],
