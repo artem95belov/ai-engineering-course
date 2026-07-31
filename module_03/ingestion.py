@@ -112,7 +112,23 @@ def chunk_text(text: str, size: int, overlap: int) -> list:
 
     Проверить себя: pytest test_m3.py -k chunk
     """
-    return [text]
+    if overlap >= size:
+        raise ValueError(
+            f"overlap ({overlap}) должен быть меньше size ({size}): "
+            f"иначе шаг окна нулевой и нарезка зациклится"
+        )
+
+    chunks = []
+    step = size - overlap
+    start = 0
+
+    while start < len(text):
+        piece = text[start:start + size]
+        if piece.strip():
+            chunks.append(piece)
+        start += step
+
+    return chunks
 
 
 # ====================================================================
