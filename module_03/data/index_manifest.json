@@ -1,7 +1,7 @@
 {
   "alias": "promtech",
-  "collection": "promtech_chunks_20260731_213940",
-  "built_at": "2026-07-31 21:39:41",
+  "collection": "promtech_chunks_20260731_221055",
+  "built_at": "2026-07-31 22:10:55",
   "model": "paraphrase-multilingual-MiniLM-L12-v2",
   "vector_size": 384,
   "chunk_size": 600,

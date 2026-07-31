@@ -132,7 +132,7 @@ def where(payload: dict) -> str:
     """Ссылка на источник: страница спарсенного PDF или раздел документа."""
     if payload.get("page") is not None:
         return f"стр. {payload['page']}"
-    return (payload.get("section") or "—")[:40]
+    return (payload.get("section") or "—")
 
 
 def show(hits, query: str):
