@@ -66,8 +66,8 @@ QUERIES = [
     "как часто проводить углублённую проверку насоса",
     "кто согласует ремонт насосного оборудования",
     "что за инцидент был с гидравлическим прессом",
-    "___",
-    "___",
+    "как часто обслуживать компрессор",
+    "агрегат перестал качать, куда смотреть",
 ]
 
 # TODO 3: порог уверенности. Если лучший score ниже этого числа — считаем,
@@ -115,6 +115,10 @@ def search(client, model, query: str, alias: str,
     vector = model.encode(query).tolist()
 
     query_filter = None
+    if doc_type is not None:
+        query_filter = Filter(
+            must=[FieldCondition(key="type", match=MatchValue(value=doc_type))]
+        )
 
     return client.query_points(
         collection_name=alias,
