@@ -1,0 +1,26 @@
+[
+  {
+    "id": "410a1546",
+    "equipment_id": "SEP-04",
+    "description": "растёт вибрация на SEP-04, приоритет высокий",
+    "priority": "high",
+    "status": "open",
+    "created_at": "2026-09-02T10:28:46.556344+00:00"
+  },
+  {
+    "id": "2aae678d",
+    "equipment_id": "SEP-04",
+    "description": "подозрение на утечку масла на SEP-04",
+    "priority": "critical",
+    "status": "open",
+    "created_at": "2026-09-02T10:33:53.891696+00:00"
+  },
+  {
+    "id": "1d30a9d8",
+    "equipment_id": "PUMP-07",
+    "description": "стук",
+    "priority": "high",
+    "status": "open",
+    "created_at": "2026-09-02T10:34:14.431636+00:00"
+  }
+]
