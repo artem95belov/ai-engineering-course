@@ -63,27 +63,52 @@ def run_scenario(scenario: dict, llm) -> dict:
     print("\n" + "#" * 70)
     print(f"# Сценарий {scenario['id']}: {scenario['name']}")
     print("#" * 70)
-    raise NotImplementedError("TODO 1: вызов run_agent и словарь строки таблицы")
+    answer, stats = run_agent(scenario["task"], llm=llm, confirm=auto_confirm)
+    return {
+        "id": scenario["id"],
+        "name": scenario["name"],
+        "expected": scenario["expected"],
+        "steps": stats["steps"],
+        "tools": ", ".join(stats["tools"]) or "—",
+        "confirmations": stats["confirmations"],
+        "tokens": stats["tokens"],
+        "stop": stats["stop"],
+        "answer": answer,
+    }
 
 
 def to_markdown(rows: list) -> str:
-    """Собирает RESULTS.md: таблица прогона + полные ответы агента.
-
-    TODO 2. Собери список строк lines и верни "\\n".join(lines):
-      * заголовок:  "# Модуль 7. Результаты прогона контрольных сценариев";
-      * шапка таблицы (одной строкой каждая):
-        "| № | Сценарий | Шагов | Инструменты | Подтверждений | Токенов "
-        "| Остановка | Ответ агента (кратко) | Соответствует? |"
-        и строка-разделитель "|---|---|---|---|---|---|---|---|---|";
-      * по строке на каждый r из rows — значения r["id"], r["name"],
-        r["steps"], r["tools"], r["confirmations"], r["tokens"], r["stop"],
-        short(r["answer"]) и знак "?" в последней колонке;
-      * после таблицы — напоминание заполнить колонку «Соответствует?»;
-      * затем раздел "## Ожидания и полные ответы": на каждый r — заголовок
-        "### Сценарий {id}. {name}", строка "**Ожидание:** {expected}"
-        и строка "**Ответ агента:** {answer}".
-    """
-    raise NotImplementedError("TODO 2: сборка markdown-таблицы результатов")
+    
+    lines = [
+        "# Модуль 7. Результаты прогона контрольных сценариев",
+        "",
+        "| № | Сценарий | Шагов | Инструменты | Подтверждений | Токенов | Остановка | Ответ агента (кратко) | Соответствует? |",
+        "|---|---|---|---|---|---|---|---|---|",
+    ]
+    for r in rows:
+        lines.append(
+            f"| {r['id']} | {r['name']} | {r['steps']} | {r['tools']} "
+            f"| {r['confirmations']} | {r['tokens']} | {r['stop']} "
+            f"| {short(r['answer'])} | ? |"
+        )
+    lines += [
+        "",
+        "Колонку «Соответствует?» заполни сам: сверь трассу и ответ с ожиданием "
+        "и поставь «да» или «нет» с одной строкой пояснения.",
+        "",
+        "## Ожидания и полные ответы",
+        "",
+    ]
+    for r in rows:
+        lines += [
+            f"### Сценарий {r['id']}. {r['name']}",
+            "",
+            f"**Ожидание:** {r['expected']}",
+            "",
+            f"**Ответ агента:** {r['answer']}",
+            "",
+        ]
+    return "\n".join(lines)
 
 
 def main():
