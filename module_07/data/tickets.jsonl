@@ -1,0 +1,4 @@
+{"ticket_id": "TKT-2026-001", "equipment_id": "КМ-101", "problem": "сильно шумит и вибрирует", "priority": "medium", "reason": "показание уровня вибрации и шума превысило допустимые значения", "status": "created", "created_at": "2026-09-03T14:58:33"}
+{"ticket_id": "TKT-2026-002", "equipment_id": "КМ-101", "problem": "сильно шумит и вибрирует", "priority": "high", "reason": "показание уровня вибрации и шума превысило допустимые нормы", "status": "created", "created_at": "2026-09-03T15:01:12"}
+{"ticket_id": "TKT-2026-003", "equipment_id": "КМ-101", "problem": "Сильный шум и вибрация", "priority": "medium", "reason": "Жалоба оператора", "status": "created", "created_at": "2026-09-03T17:13:58"}
+{"ticket_id": "TKT-2026-004", "equipment_id": "КМ-101", "problem": "сильно шумит и вибрирует", "priority": "high", "reason": "показание датчика вибрации и уровня шума", "status": "created", "created_at": "2026-09-03T18:04:18"}
